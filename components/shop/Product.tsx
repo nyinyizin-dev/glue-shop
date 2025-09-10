@@ -7,6 +7,7 @@ import { Icon, FavouriteIcon, StarIcon } from "@/components/ui/icon";
 import { HStack } from "@/components/ui/hstack";
 import { VStack } from "@/components/ui/vstack";
 import { Text } from "@/components/ui/text";
+import { useRouter } from "expo-router";
 
 const blurhash =
   "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
@@ -22,8 +23,10 @@ const Product = ({
   image,
   users,
 }: ProductType) => {
+ const router = useRouter()
+
   return (
-    <Pressable className="mx-2 mb-4">
+    <Pressable className="mx-2 mb-4" onPress={()=> router.navigate('/detail')}>
       <Card className="p-0">
         <Image
           source={image}
