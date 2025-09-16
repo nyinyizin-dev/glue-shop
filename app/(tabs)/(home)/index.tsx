@@ -16,6 +16,8 @@ import { Button, ButtonText, ButtonIcon } from "@/components/ui/button";
 import { MoveUpRight } from "lucide-react-native";
 import { Box } from "@/components/ui/box";
 
+
+
 const blurhash =
   "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
 
@@ -44,7 +46,7 @@ export default function HomeScreen() {
           <Cart />
         </Pressable>
       </HStack>
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <Image
           style={{ width: "100%", aspectRatio: 20 / 9 }}
           source={require("@/data/shop/banner6.png")}

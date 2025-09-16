@@ -1,18 +1,8 @@
 import React from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  Dimensions,
-  Animated,
-  ImageRequireSource,
-} from "react-native";
+import { StyleSheet, View, Dimensions, Animated } from "react-native";
 import type { PagerViewOnPageScrollEventData } from "react-native-pager-view";
 import PagerView from "react-native-pager-view";
 import { Image } from "expo-image";
-
-const blurhash =
-  "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
 
 const p1 = require("@/data/shop/pager1.png");
 const p2 = require("@/data/shop/pager2.png");
@@ -28,6 +18,9 @@ const sample = [
 
 const { width, height } = Dimensions.get("window");
 const DOT_SIZE = 20;
+
+const blurhash =
+  "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
 
 const Pagination = ({
   scrollOffsetAnimatedValue,
@@ -88,9 +81,9 @@ const ViewPager = () => {
             },
           ],
           {
-            listener: ({ nativeEvent: { offset, position } }) => {
-              console.log(`Position: ${position} Offset: ${offset}`);
-            },
+            // listener: ({ nativeEvent: { offset, position } }) => {
+            //   console.log(`Position: ${position} Offset: ${offset}`);
+            // },
             useNativeDriver: true,
           },
         )}
