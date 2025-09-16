@@ -223,10 +223,42 @@ const Detail = () => {
                   className="items-center justify-between rounded-md bg-slate-100 px-2 py-1"
                 >
                   <HStack space="sm" className="items-center">
-                    <Icon as={AddIcon} size="md" />
+                    {/* <Icon as={AddIcon} size="md" /> */}
+                    <Button
+                      size="md"
+                      className=""
+                      variant="link"
+                      onPress={() =>
+                        setCart((prev) =>
+                          prev.map((item) =>
+                            item.id === c.id
+                              ? { ...item, quantity: item.quantity + 1 }
+                              : item,
+                          ),
+                        )
+                      }
+                    >
+                      <ButtonIcon as={AddIcon} />
+                    </Button>
                     <Text>
-                      {c.color} - {c.size} ({c.quantity})
+                      {c.color} - {c.size} (Qty {c.quantity})
                     </Text>
+                     <Button
+                      size="md"
+                      className=""
+                      variant="link"
+                      onPress={() =>
+                        setCart((prev) =>
+                          prev.map((item) =>
+                            item.id === c.id && item.quantity > 1
+                              ? { ...item, quantity: item.quantity - 1 }
+                              : item,
+                          ),
+                        )
+                      }
+                    >
+                      <ButtonIcon as={RemoveIcon} />
+                    </Button>
                   </HStack>
                   <Button
                     size="md"
