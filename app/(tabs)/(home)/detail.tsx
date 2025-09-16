@@ -1,15 +1,14 @@
-import { Text } from "react-native";
-import React from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Link } from "expo-router";
+import { View, Text } from 'react-native'
+import React from 'react'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import ViewPager from '@/components/shop/ViewPager'
 
 const Detail = () => {
   return (
-    <SafeAreaView>
-      <Link href="../">Back to Home</Link>
-      <Text>Detail</Text>
-    </SafeAreaView>
-  );
-};
+    <View>
+      <ViewPager />
+    </View>
+  )
+}
 
-export default Detail;
+export default  Detail
