@@ -9,7 +9,14 @@ import { Text } from "@/components/ui/text";
 import { products, sizes } from "@/data";
 import { ScrollView } from "react-native";
 import { HStack } from "@/components/ui/hstack";
-import { Icon, FavouriteIcon, StarIcon, AddIcon, RemoveIcon } from "@/components/ui/icon";
+import {
+  Icon,
+  FavouriteIcon,
+  StarIcon,
+  AddIcon,
+  RemoveIcon,
+  CloseCircleIcon,
+} from "@/components/ui/icon";
 import {
   Checkbox,
   CheckboxGroup,
@@ -28,30 +35,53 @@ import {
 import {
   Actionsheet,
   ActionsheetContent,
-  ActionsheetItem,
-  ActionsheetItemText,
   ActionsheetDragIndicator,
   ActionsheetDragIndicatorWrapper,
   ActionsheetBackdrop,
-} from '@/components/ui/actionsheet';
+} from "@/components/ui/actionsheet";
+import { Box } from "@/components/ui/box";
+import { Fab, FabLabel, FabIcon } from "@/components/ui/fab";
+
+type CartProps = {
+  id: number;
+  color: string;
+  size: string;
+  quantity: number;
+};
 
 const Detail = () => {
   const { id } = useLocalSearchParams();
   const [more, setMore] = useState(false);
   const [colors, setColors] = useState([]);
   const [sizes, setSizes] = useState([]);
+  const [cart, setCart] = useState<CartProps[]>([]);
   const product = products.find((p) => p.id === +id);
 
   const [showActionsheet, setShowActionsheet] = useState(false);
-  const [quantity, setQuantity] = useState(1)
+  const [quantity, setQuantity] = useState(1);
   const handleClose = () => setShowActionsheet(false);
-  const submitHandler = () => setShowActionsheet(false);
+  const submitHandler = () => {
+    setShowActionsheet(false);
+    if (quantity === 0) return;
+    colors.forEach((color) => {
+      sizes.forEach((size) => {
+        setCart((prev) => [
+          { id: Math.random(), color, size, quantity },
+          ...prev,
+        ]);
+      });
+    });
+    // Reset
+    setColors([]);
+    setSizes([]);
+    setQuantity(1);
+  };
 
   const toast = useToast();
   const [toastId, setToastId] = useState(0);
   const handleToast = (title: string, description: string) => {
     if (!toast.isActive(toastId.toString())) {
-      showNewToast(title,description);
+      showNewToast(title, description);
     }
   };
   const showNewToast = (title: string, description: string) => {
@@ -66,9 +96,7 @@ const Detail = () => {
         return (
           <Toast nativeID={uniqueToastId} action="muted" variant="solid">
             <ToastTitle>{title}</ToastTitle>
-            <ToastDescription>
-              {description}
-            </ToastDescription>
+            <ToastDescription>{description}</ToastDescription>
           </Toast>
         );
       },
@@ -177,47 +205,107 @@ const Detail = () => {
             className="mt-6 self-start rounded-lg bg-sky-500"
             onPress={() => {
               if (colors.length > 0 && sizes.length > 0) {
-                setShowActionsheet(true)
+                setShowActionsheet(true);
                 return;
               }
-              const title = `Must choose ${colors.length === 0 ? 'color - ' : ""} ${sizes.length === 0 ? 'size - ' : ""}`
-              const description = "Pelase set quantity just after choosing"
-              handleToast(title,description)
+              const title = `Must choose ${colors.length === 0 ? "color - " : ""} ${sizes.length === 0 ? "size - " : ""}`;
+              const description = "Pelase set quantity just after choosing";
+              handleToast(title, description);
             }}
           >
             <ButtonText>Set Quantity</ButtonText>
           </Button>
+          {cart.length > 0 && (
+            <VStack space={"sm"} className="mt-4">
+              {cart.map((c) => (
+                <HStack
+                  key={c.id}
+                  className="items-center justify-between rounded-md bg-slate-100 px-2 py-1"
+                >
+                  <HStack space="sm" className="items-center">
+                    <Icon as={AddIcon} size="md" />
+                    <Text>
+                      {c.color} - {c.size} ({c.quantity})
+                    </Text>
+                  </HStack>
+                  <Button
+                    size="md"
+                    className="mr-4"
+                    variant="link"
+                    onPress={() =>
+                      setCart((prev) => prev.filter((item) => item.id !== c.id))
+                    }
+                  >
+                    <ButtonIcon as={CloseCircleIcon} />
+                  </Button>
+                </HStack>
+              ))}
+            </VStack>
+          )}
         </VStack>
+        <Box className="h-40" />
       </ScrollView>
-
-       <Actionsheet isOpen={showActionsheet} onClose={handleClose}>
+      <Fab size="md" placement="bottom right" className="mb-24 bg-green-500">
+        <FabIcon as={AddIcon} />
+        <FabLabel bold>Add To Cart</FabLabel>
+      </Fab>
+      <Actionsheet isOpen={showActionsheet} onClose={handleClose}>
         <ActionsheetBackdrop />
         <ActionsheetContent>
           <ActionsheetDragIndicatorWrapper>
             <ActionsheetDragIndicator />
           </ActionsheetDragIndicatorWrapper>
-         <VStack className="w-full items-center justify-center pt-5">
-          <Text bold>You choose colors and sizes</Text>
-          <Text>{colors.join(', ')} - {sizes.join(', ')}</Text>
-          <Text bold className="mt-8">Please set quantity</Text>
-          <Text bold className="my-8" size='5xl'>{quantity}</Text>
-          <HStack space='lg' className="w-full">
-            <Button size='lg' className="flex-1 bg-sky-500" onPress={() => setQuantity(q => q + 1)}>
-              <ButtonText>Increase</ButtonText>
-              <ButtonIcon  as={AddIcon}/>
+          <VStack className="w-full items-center justify-center pt-5">
+            <Text bold>You choose colors and sizes</Text>
+            <Text>
+              {colors.join(", ")} - {sizes.join(", ")}
+            </Text>
+            <Text bold className="mt-8">
+              Please set quantity
+            </Text>
+            <Text bold className="my-8" size="5xl">
+              {quantity}
+            </Text>
+            <HStack space="lg" className="w-full">
+              <Button
+                size="lg"
+                className="flex-1 bg-sky-500"
+                onPress={() => setQuantity((q) => q + 1)}
+              >
+                <ButtonText>Increase</ButtonText>
+                <ButtonIcon as={AddIcon} />
+              </Button>
+              <Button
+                size="lg"
+                className="flex-1 bg-sky-500"
+                onPress={() => {
+                  if (quantity === 1) return;
+                  setQuantity((q) => q - 1);
+                }}
+              >
+                <ButtonText>Decrease</ButtonText>
+                <ButtonIcon as={RemoveIcon} />
+              </Button>
+            </HStack>
+            <Button
+              size="lg"
+              className="mb-2 mt-6 bg-green-500"
+              onPress={submitHandler}
+            >
+              <ButtonText className="flex-1 text-center font-bold">
+                Confirm
+              </ButtonText>
             </Button>
-            <Button size='lg' className="flex-1 bg-sky-500" onPress={() => {if(quantity === 1) return; setQuantity(q => q - 1)}}>
-              <ButtonText>Decrease</ButtonText>
-              <ButtonIcon  as={RemoveIcon}/>
+            <Button
+              size="lg"
+              className="mb-6 bg-gray-500"
+              onPress={handleClose}
+            >
+              <ButtonText className="flex-1 text-center font-bold">
+                Cancel
+              </ButtonText>
             </Button>
-          </HStack>
-          <Button size='lg' className="mt-6 mb-2 bg-green-500" onPress={submitHandler}>
-              <ButtonText className="font-bold flex-1 text-center">Confirm</ButtonText>
-          </Button>
-          <Button size='lg' className=" mb-6 bg-gray-500" onPress={handleClose}>
-              <ButtonText className="font-bold flex-1 text-center">Cancel</ButtonText>
-          </Button>
-         </VStack>
+          </VStack>
         </ActionsheetContent>
       </Actionsheet>
     </VStack>
