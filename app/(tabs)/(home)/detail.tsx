@@ -241,9 +241,9 @@ const Detail = () => {
                       <ButtonIcon as={AddIcon} />
                     </Button>
                     <Text>
-                      {c.color} - {c.size} (Qty {c.quantity})
+                      {c.color} - {c.size} ({c.quantity})
                     </Text>
-                     <Button
+                    <Button
                       size="md"
                       className=""
                       variant="link"
