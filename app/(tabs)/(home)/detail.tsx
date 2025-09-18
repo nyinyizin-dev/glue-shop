@@ -1,46 +1,46 @@
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 
-import { VStack } from "@/components/ui/vstack";
-import ViewPager from "@/components/shop/ViewPager";
-import { Pressable } from "@/components/ui/pressable";
 import Cart from "@/components/shop/Cart";
-import { Text } from "@/components/ui/text";
-import { products, sizes } from "@/data";
-import { ScrollView } from "react-native";
-import { HStack } from "@/components/ui/hstack";
-import {
-  Icon,
-  FavouriteIcon,
-  StarIcon,
-  AddIcon,
-  RemoveIcon,
-  CloseCircleIcon,
-} from "@/components/ui/icon";
-import {
-  Checkbox,
-  CheckboxGroup,
-  CheckboxIndicator,
-  CheckboxIcon,
-  CheckboxLabel,
-} from "@/components/ui/checkbox";
-import { CheckIcon } from "@/components/ui/icon";
-import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
-import {
-  Toast,
-  ToastTitle,
-  ToastDescription,
-  useToast,
-} from "@/components/ui/toast";
+import ViewPager from "@/components/shop/ViewPager";
 import {
   Actionsheet,
+  ActionsheetBackdrop,
   ActionsheetContent,
   ActionsheetDragIndicator,
   ActionsheetDragIndicatorWrapper,
-  ActionsheetBackdrop,
 } from "@/components/ui/actionsheet";
 import { Box } from "@/components/ui/box";
-import { Fab, FabLabel, FabIcon } from "@/components/ui/fab";
+import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
+import {
+  Checkbox,
+  CheckboxGroup,
+  CheckboxIcon,
+  CheckboxIndicator,
+  CheckboxLabel,
+} from "@/components/ui/checkbox";
+import { Fab, FabIcon, FabLabel } from "@/components/ui/fab";
+import { HStack } from "@/components/ui/hstack";
+import {
+  AddIcon,
+  CheckIcon,
+  CloseCircleIcon,
+  FavouriteIcon,
+  Icon,
+  RemoveIcon,
+  StarIcon,
+} from "@/components/ui/icon";
+import { Pressable } from "@/components/ui/pressable";
+import { Text } from "@/components/ui/text";
+import {
+  Toast,
+  ToastDescription,
+  ToastTitle,
+  useToast,
+} from "@/components/ui/toast";
+import { VStack } from "@/components/ui/vstack";
+import { products } from "@/data";
+import { ScrollView } from "react-native";
 
 type CartProps = {
   id: number;

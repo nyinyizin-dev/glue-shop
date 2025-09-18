@@ -4,28 +4,26 @@ module.exports = function (api) {
   return {
     presets: [
       [
-        'babel-preset-expo',
+        "babel-preset-expo",
         {
-          jsxImportSource: 'nativewind',
+          jsxImportSource: "nativewind",
         },
       ],
-      'nativewind/babel',
+      "nativewind/babel",
     ],
 
     plugins: [
       [
-        'module-resolver',
+        "module-resolver",
         {
-          root: ['./'],
-
+          root: ["./"],
           alias: {
-            '@': './',
-            'tailwind.config': './tailwind.config.js',
+            "@": "./",
+            "tailwind.config": "./tailwind.config.js",
           },
         },
       ],
-      // 'react-native-reanimated/plugin',
-      'react-native-worklets'
+      "react-native-worklets-core/plugin",
     ],
   };
 };
