@@ -1,4 +1,4 @@
-import { Stack, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 
 import Cart from "@/components/shop/Cart";
@@ -40,22 +40,20 @@ import {
 } from "@/components/ui/toast";
 import { VStack } from "@/components/ui/vstack";
 import { products } from "@/data";
+import useCartStore from "@/store/cartStore";
+import type { CartItem } from "@/types";
 import { ScrollView } from "react-native";
-
-type CartProps = {
-  id: number;
-  color: string;
-  size: string;
-  quantity: number;
-};
 
 const Detail = () => {
   const { id } = useLocalSearchParams();
+  const router = useRouter();
   const [more, setMore] = useState(false);
   const [colors, setColors] = useState([]);
   const [sizes, setSizes] = useState([]);
-  const [cart, setCart] = useState<CartProps[]>([]);
+  const [cart, setCart] = useState<CartItem[]>([]);
   const product = products.find((p) => p.id === +id);
+  const { addToCart } = useCartStore();
+  const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
 
   const [showActionsheet, setShowActionsheet] = useState(false);
   const [quantity, setQuantity] = useState(1);
@@ -102,6 +100,26 @@ const Detail = () => {
       },
     });
   };
+
+  const addCartToStore = () => {
+    if (cart.length === 0) {
+      handleToast("Cart is empty", "Please add items to your cart first");
+      return;
+    }
+
+    const cartProduct = {
+      id: product!.id,
+      title: product!.title,
+      image: product!.image,
+      price: product!.price,
+      items: cart,
+    };
+
+    addToCart(cartProduct);
+    setCart([]);
+    router.back();
+  };
+
   return (
     <VStack className="flex-1 bg-white">
       <Stack.Screen
@@ -215,6 +233,11 @@ const Detail = () => {
           >
             <ButtonText>Set Quantity</ButtonText>
           </Button>
+          {totalItems > 0 && (
+            <Text size="md" className="ml-2 font-semibold text-gray-500">
+              Total Price - ${Number(product!.price.toFixed(2)) * totalItems}
+            </Text>
+          )}
           {cart.length > 0 && (
             <VStack space={"sm"} className="mt-4">
               {cart.map((c) => (
@@ -241,8 +264,9 @@ const Detail = () => {
                       <ButtonIcon as={AddIcon} />
                     </Button>
                     <Text>
-                      {c.color} - {c.size} ({c.quantity})
+                      {c.color} - {c.size} ( {c.quantity} )
                     </Text>
+
                     <Button
                       size="md"
                       className=""
@@ -277,7 +301,12 @@ const Detail = () => {
         </VStack>
         <Box className="h-40" />
       </ScrollView>
-      <Fab size="md" placement="bottom right" className="mb-24 bg-green-500">
+      <Fab
+        size="md"
+        placement="bottom right"
+        className="mb-24 bg-green-500"
+        onPress={addCartToStore}
+      >
         <FabIcon as={AddIcon} />
         <FabLabel bold>Add To Cart</FabLabel>
       </Fab>
