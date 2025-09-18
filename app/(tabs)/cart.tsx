@@ -1,4 +1,5 @@
 import { Image } from "expo-image";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Alert, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -26,9 +27,10 @@ const blurhash =
   "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
 
 export default function CartScreen() {
+  const router = useRouter();
   const [showAlertDialog, setShowAlertDialog] = useState(false);
   const handleClose = () => setShowAlertDialog(false);
-  const { carts, getTotalItems, getTotalPrice } = useCartStore();
+  const { carts, getTotalItems, getTotalPrice, clearCart } = useCartStore();
 
   const deleteAllCarts = () => {
     Alert.alert(
@@ -43,7 +45,7 @@ export default function CartScreen() {
           text: "Delete",
           style: "destructive",
           onPress: () => {
-            console.log("All Carts Deleted");
+            clearCart();
           },
         },
       ],
@@ -53,7 +55,19 @@ export default function CartScreen() {
   return (
     <SafeAreaView className="flex-1 bg-white px-4">
       {carts.length === 0 ? (
-        <Text>Empty Cart</Text>
+        <Box className="flex-1 items-center justify-center">
+          <Heading className="mb-4 text-center">Your Cart is Empty</Heading>
+          <Text className="mb-6 text-center text-gray-500">
+            Add some products to your cart to see theme here.
+          </Text>
+          <Button
+            size="lg"
+            className="bg-blue-500"
+            onPress={() => router.navigate("/")}
+          >
+            <ButtonText>Go to Shop</ButtonText>
+          </Button>
+        </Box>
       ) : (
         <Box className="flex-1">
           <Heading className="mb-6 mt-2 text-center">
@@ -92,10 +106,10 @@ export default function CartScreen() {
                     {product.items.map((item) => (
                       <HStack
                         key={item.id}
-                        className="items-center justify-center"
+                        className="items-center"
                         space="3xl"
                       >
-                        <VStack>
+                        <VStack className="w-1/3 items-end">
                           <Text size="sm" className="font-light">
                             {item.color} - {item.size}
                           </Text>
@@ -103,7 +117,7 @@ export default function CartScreen() {
                             ${product.price} x {item.quantity}
                           </Text>
                         </VStack>
-                        <HStack className="items-center" space="sm">
+                        <HStack className="w-2/3 items-center" space="sm">
                           <Button
                             size="xs"
                             className="border-gray-300"

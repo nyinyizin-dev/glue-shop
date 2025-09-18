@@ -11,7 +11,7 @@ type Actions = {
   addToCart: (product: CartType) => void;
   // updateCart: (productId: number, itemId: number, quantity: number) => void;
   // removeFromCart: (productId: number, itemId: number) => void;
-  // clearCart: () => void;
+  clearCart: () => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
 };
@@ -58,6 +58,7 @@ const useCartStore = create<State & Actions>()(
         0,
       );
     },
+    clearCart: () => set({ carts: [] }),
     getTotalPrice: () => {
       const { carts } = get();
       return carts.reduce(
