@@ -9,8 +9,8 @@ type State = {
 
 type Actions = {
   addToCart: (product: CartType) => void;
-  // updateCart: (productId: number, itemId: number, quantity: number) => void;
-  // removeFromCart: (productId: number, itemId: number) => void;
+  updateCart: (productId: number, itemId: number, quantity: number) => void;
+  removeFromCart: (productId: number, itemId: number) => void;
   clearCart: () => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
@@ -48,6 +48,49 @@ const useCartStore = create<State & Actions>()(
             } else state.carts[existingCartIndex].items.push(item); // if item not exist, add to product
           });
         } else state.carts.push(product);
+      });
+    },
+    updateCart: (productId, itemId, quantity) => {
+      set((state) => {
+        const existingCartIndex = state.carts.findIndex(
+          (cart) => cart.id === productId,
+        );
+        if (existingCartIndex < 0) return;
+
+        const existingItemIndex = state.carts[
+          existingCartIndex
+        ].items.findIndex((item) => item.id === itemId);
+        if (existingItemIndex < 0) return;
+
+        state.carts[existingCartIndex].items[existingItemIndex].quantity =
+          quantity;
+
+        if (quantity <= 0) {
+          state.carts[existingCartIndex].items.splice(existingItemIndex, 1);
+        }
+
+        if (state.carts[existingCartIndex].items.length === 0) {
+          state.carts.splice(existingCartIndex, 1);
+        }
+      });
+    },
+    removeFromCart: (productId, itemId) => {
+      set((state) => {
+        const existingCartIndex = state.carts.findIndex(
+          (cart) => cart.id === productId,
+        );
+        if (existingCartIndex < 0) return;
+
+        const existingItemIndex = state.carts[
+          existingCartIndex
+        ].items.findIndex((item) => item.id === itemId);
+        if (existingItemIndex < 0) return;
+
+        state.carts[existingCartIndex].items.splice(existingItemIndex, 1);
+
+        if (state.carts[existingCartIndex].items.length === 0) {
+          state.carts.splice(existingCartIndex, 1);
+        }
       });
     },
     getTotalItems: () => {
