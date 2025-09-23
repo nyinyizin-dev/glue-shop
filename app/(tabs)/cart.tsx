@@ -43,7 +43,7 @@ export default function CartScreen() {
   const [showAlertDialog, setShowAlertDialog] = useState(false);
   const handleClose = () => setShowAlertDialog(false);
   const hadndleDelete = () => {
-    removeFromCart(deleteProduct?.productId, deleteProduct?.itemId);
+    removeFromCart(deleteProduct!.productId, deleteProduct!.itemId);
     setShowAlertDialog(false);
   };
 
