@@ -4,10 +4,12 @@ import { createJSONStorage, persist } from "zustand/middleware";
 
 type State = {
   isLoggedIn: boolean; // for login
+  isOtpScreen: boolean;
   _hasHydrated: boolean; // for splash screen
 };
 
 type Actions = {
+  setOtpScreen: () => void;
   login: () => void;
   logout: () => void;
   setHyasHydrated: (value: boolean) => void;
@@ -15,6 +17,7 @@ type Actions = {
 
 const initialState: State = {
   isLoggedIn: false,
+  isOtpScreen: false,
   _hasHydrated: false,
 };
 
@@ -22,6 +25,7 @@ export const useAuthStore = create<State & Actions>()(
   persist(
     (set) => ({
       ...initialState,
+      setOtpScreen: () => set((state) => ({ ...state, isOtpScreen: true })),
       login: () => set((state) => ({ ...state, isLoggedIn: true })),
       logout: () => set((state) => ({ ...state, isLoggedIn: false })),
       setHyasHydrated: (value) =>
