@@ -1,20 +1,18 @@
-import { router } from "expo-router";
 import { Text } from "react-native";
 
+import { useAuthStore } from "@/store/authStore";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useSession } from "../providers/ctx";
 
 export default function Login() {
-  const { signIn } = useSession();
+  const { login } = useAuthStore();
+
   return (
     <SafeAreaView
       style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
     >
       <Text
         onPress={() => {
-          signIn();
-          // Navigate after signing in. You may want to tweak this to ensure sign-in is successful before navigating.
-          router.replace("/");
+          login();
         }}
       >
         Sign In
