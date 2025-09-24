@@ -1,6 +1,7 @@
+import { usePreventRemove } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { Alert, BackHandler, Button, Text, View } from "react-native";
+import { Alert, Button, Text, View } from "react-native";
 import { OtpInput } from "react-native-otp-entry";
 
 import { useAuthStore } from "@/store/authStore";
@@ -25,28 +26,43 @@ const OtpScreen = () => {
     return () => clearInterval(id);
   }, []);
 
-  useEffect(() => {
-    const backAction = () => {
-      if (timeLeft > 0) return true; // if timer have, cannot goback
-      Alert.alert("Hold on!", "Are you sure you want to go back?", [
+  usePreventRemove(timeLeft > 0, () => {
+    Alert.alert(
+      "Hold on!",
+      `Please wait ${formatTime(timeLeft)} before leaving`,
+      [
         {
-          text: "Cancel",
-          onPress: () => null,
-          style: "cancel",
+          text: "OK",
+          //   onPress: () => null,
+          style: "default",
         },
-        // { text: "YES", onPress: () => BackHandler.exitApp() },
-        { text: "YES", onPress: () => router.back() },
-      ]);
-      return true;
-    };
-
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction,
+      ],
     );
+  });
 
-    return () => backHandler.remove();
-  }, [router, timeLeft]);
+  // for android only
+  //   useEffect(() => {
+  //     const backAction = () => {
+  //       if (timeLeft > 0) return true; // if timer have, cannot goback
+  //       Alert.alert("Hold on!", "Are you sure you want to go back?", [
+  //         {
+  //           text: "Cancel",
+  //           onPress: () => null,
+  //           style: "cancel",
+  //         },
+  //         // { text: "YES", onPress: () => BackHandler.exitApp() },
+  //         { text: "YES", onPress: () => router.back() },
+  //       ]);
+  //       return true;
+  //     };
+
+  //     const backHandler = BackHandler.addEventListener(
+  //       "hardwareBackPress",
+  //       backAction,
+  //     );
+
+  //     return () => backHandler.remove();
+  //   }, [router, timeLeft]);
 
   const handleOtpFilled = (otp: string) => {
     // console.log(`OTP is ${otp}`);
