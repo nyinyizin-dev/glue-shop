@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { Text, View } from "react-native";
+import { Alert, BackHandler, Button, Text, View } from "react-native";
 import { OtpInput } from "react-native-otp-entry";
 
 import { useAuthStore } from "@/store/authStore";
@@ -25,6 +25,29 @@ const OtpScreen = () => {
     return () => clearInterval(id);
   }, []);
 
+  useEffect(() => {
+    const backAction = () => {
+      if (timeLeft > 0) return true; // if timer have, cannot goback
+      Alert.alert("Hold on!", "Are you sure you want to go back?", [
+        {
+          text: "Cancel",
+          onPress: () => null,
+          style: "cancel",
+        },
+        // { text: "YES", onPress: () => BackHandler.exitApp() },
+        { text: "YES", onPress: () => router.back() },
+      ]);
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction,
+    );
+
+    return () => backHandler.remove();
+  }, [router, timeLeft]);
+
   const handleOtpFilled = (otp: string) => {
     // console.log(`OTP is ${otp}`);
     setPasswordScreen();
@@ -44,7 +67,17 @@ const OtpScreen = () => {
           onFilled={handleOtpFilled}
         />
       </View>
-      <Text>Time remaining: {formatTime(timeLeft)}s</Text>
+      {timeLeft > 0 ? (
+        <Text>Time remaining - {formatTime(timeLeft)}s</Text>
+      ) : (
+        <Button
+          title="Resend OTP"
+          onPress={() => {
+            endTimeRef.current = Date.now() + OTP_TIMEOUT_MS;
+            setTimeLeft(Math.max(0, Math.ceil(OTP_TIMEOUT_MS / 1000)));
+          }}
+        />
+      )}
     </View>
   );
 };
