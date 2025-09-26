@@ -21,7 +21,7 @@ type Actions = {
     randomToken: string;
   }) => void;
   setOtpScreen: (phone: string, token: string) => void;
-  setPasswordScreen: () => void;
+  setPasswordScreen: (token: string) => void;
   logout: () => void;
   setHyasHydrated: (value: boolean) => void;
 };
@@ -54,8 +54,8 @@ export const useAuthStore = create<State & Actions>()(
         })),
       setOtpScreen: (phone, token) =>
         set((state) => ({ ...state, isOtpScreen: true, phone, token })),
-      setPasswordScreen: () =>
-        set((state) => ({ ...state, isPasswordScreen: true })),
+      setPasswordScreen: (token) =>
+        set((state) => ({ ...state, isPasswordScreen: true, token })),
       logout: () => set((state) => ({ ...state, isLoggedIn: false })),
       setHyasHydrated: (value) =>
         set((state) => ({ ...state, _hasHydrated: value })),
