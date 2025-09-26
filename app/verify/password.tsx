@@ -1,14 +1,13 @@
 import { isAxiosError } from "axios";
 import { Image } from "expo-image";
-import { Link } from "expo-router";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { ActivityIndicator, ScrollView } from "react-native";
+import { ActivityIndicator, Alert, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { authApi } from "@/api/";
 import { Button, ButtonText } from "@/components/ui/button";
-import { Divider } from "@/components/ui/divider";
 import {
   FormControl,
   FormControlHelper,
@@ -33,12 +32,16 @@ import { useAuthStore } from "@/store/authStore";
 const blurhash =
   "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
 
-export default function Login() {
-  const { login } = useAuthStore();
+export default function ConfirmPassword() {
+  const router = useRouter();
+  const { login, phone, token } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleShowPassword = () => setShowPassword((showState) => !showState);
+  const handleShowConfirmPassword = () =>
+    setShowConfirmPassword((showState) => !showState);
 
   const {
     control,
@@ -47,7 +50,7 @@ export default function Login() {
   } = useForm({
     defaultValues: {
       phone: "",
-      password: "",
+      confirmPassword: "",
     },
   });
 
@@ -77,31 +80,61 @@ export default function Login() {
     });
   };
 
+  const handleAlert = (title: string, description: string) => {
+    Alert.alert(title, description, [
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+      {
+        text: "Go to Login",
+        style: "default",
+        onPress: () => {
+          router.navigate("/login");
+        },
+      },
+    ]);
+  };
+
   const onSubmit = async (formState: any) => {
     //console.log(formState);
+    if (formState.password !== formState.confirmPassword) {
+      handleToast(
+        "Password mismatch!",
+        "Both passwords must match and be 8 digits long.",
+      );
+      return;
+    }
     setIsSubmitting(true);
-    const { phone, password } = formState;
     try {
-      const response = await authApi.post("login", {
+      const response = await authApi.post("confirm-password", {
         phone,
-        password,
+        token,
+        password: formState.password,
       });
 
-      //console.log("Login successful:", response.data);
-      const { token, refreshToken, randToken } = response.data;
-      login({ accessToken: token, refreshToken, randomToken: randToken });
+      //console.log("Registration successful:", response.data);
+      login({
+        accessToken: response.data.token,
+        refreshToken: response.data.refreshToken,
+        randomToken: response.data.randToken,
+      });
     } catch (error) {
       // console.error("Login failed:", error);
       if (isAxiosError(error)) {
         // Handle Axios error
         // console.error("Axios error:", error.response?.data);
-        handleToast(
-          "Login failed!",
-          error.response?.data.message || "An error occurred during login.",
+        handleAlert(
+          "Registration failed!",
+          error.response?.data.message ||
+            "An error occurred during Registration.",
         );
       } else {
         // Handle other errors
-        handleToast("Login failed!", "An error occurred during login.");
+        handleAlert(
+          "Registration failed!",
+          "An error occurred during Registration.",
+        );
       }
     } finally {
       setIsSubmitting(false);
@@ -126,10 +159,10 @@ export default function Login() {
         <VStack space="4xl">
           <VStack space="lg">
             <Heading size="3xl" className="leading-snug">
-              Sign In {"\n"}to your Account
+              Confirm Password {"\n"}to complete Registration
             </Heading>
             <Text size="lg" className="font-semibold text-gray-500">
-              Enter your phone & password to sign in
+              Both password must match and must be 8 digits.
             </Text>
           </VStack>
           <FormControl
@@ -139,52 +172,6 @@ export default function Login() {
             // isReadOnly={false}
             // isRequired={false}
           >
-            <VStack space="xs">
-              <FormControlLabel>
-                <FormControlLabelText className="text-lg font-semibold text-gray-500">
-                  Phone Number
-                </FormControlLabelText>
-              </FormControlLabel>
-              <Controller
-                control={control}
-                rules={{
-                  required: {
-                    value: true,
-                    message: "Phone number is required.",
-                  },
-                  minLength: {
-                    value: 7,
-                    message: "This is not a valid phone number.",
-                  },
-                  maxLength: {
-                    value: 12,
-                    message: "This is not a valid phone number.",
-                  },
-                  pattern: {
-                    value: /^\d+$/,
-                    message: "Please enter digits only.",
-                  },
-                }}
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <Input className="h-16 rounded-lg border-gray-200" size="xl">
-                    <InputField
-                      placeholder="0977******7"
-                      value={value}
-                      onBlur={onBlur}
-                      onChangeText={onChange}
-                      inputMode="numeric"
-                      maxLength={12}
-                    />
-                  </Input>
-                )}
-                name="phone"
-              />
-              {errors.phone && (
-                <Text size="md" className="text-red-400">
-                  {errors.phone.message}
-                </Text>
-              )}
-            </VStack>
             <VStack space="xs" className="mt-5">
               <FormControlLabel>
                 <FormControlLabelText className="text-lg font-semibold text-gray-500">
@@ -238,6 +225,64 @@ export default function Login() {
             <FormControlHelper>
               <FormControlHelperText>Must be 8 digits.</FormControlHelperText>
             </FormControlHelper>
+            <VStack space="xs" className="mt-5">
+              <FormControlLabel>
+                <FormControlLabelText className="text-lg font-semibold text-gray-500">
+                  Confirm Password
+                </FormControlLabelText>
+              </FormControlLabel>
+              <Controller
+                control={control}
+                rules={{
+                  required: {
+                    value: true,
+                    message: "Password is required.",
+                  },
+                  minLength: {
+                    value: 8,
+                    message: "Password must be 8 digits long.",
+                  },
+                  maxLength: {
+                    value: 8,
+                    message: "Password must be 8 digits long.",
+                  },
+                  pattern: {
+                    value: /^\d+$/,
+                    message: "Please enter digits only.",
+                  },
+                }}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <Input className="h-16 rounded-lg border-gray-200" size="xl">
+                    <InputField
+                      type={showConfirmPassword ? "text" : "password"}
+                      placeholder="*********"
+                      value={value}
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      inputMode="numeric"
+                      maxLength={8}
+                    />
+                    <InputSlot
+                      className="pr-3"
+                      onPress={handleShowConfirmPassword}
+                    >
+                      <InputIcon
+                        as={showConfirmPassword ? EyeOffIcon : EyeIcon}
+                      />
+                    </InputSlot>
+                  </Input>
+                )}
+                name="confirmPassword"
+              />
+              {errors.confirmPassword && (
+                <Text size="md" className="text-red-400">
+                  {errors.confirmPassword.message}
+                </Text>
+              )}
+            </VStack>
+            <FormControlHelper>
+              <FormControlHelperText>Must be 8 digits.</FormControlHelperText>
+            </FormControlHelper>
             {/* <FormControlError>
             <FormControlErrorIcon as={AlertCircleIcon} />
             <FormControlErrorText>
@@ -245,29 +290,18 @@ export default function Login() {
             </FormControlErrorText>
           </FormControlError> */}
           </FormControl>
-          <Text size="md" bold className="text-right text-blue-500">
-            Forgot Password?
-          </Text>
+
           <Button
-            className="h-16 rounded-lg bg-blue-600"
+            className="h-16 rounded-lg bg-sky-600"
             onPress={handleSubmit(onSubmit)}
             disabled={isSubmitting}
           >
             {isSubmitting ? (
               <ActivityIndicator />
             ) : (
-              <ButtonText className="text-lg font-bold">Sign In</ButtonText>
+              <ButtonText className="text-lg font-bold">Submit</ButtonText>
             )}
           </Button>
-        </VStack>
-        <VStack space="lg" className="mt-6">
-          <Divider className="bg-gray-300" />
-          <Text className="text-center">Create an account ?</Text>
-          <Link href="/register" asChild>
-            <Button className="h-16 rounded-lg bg-sky-400">
-              <ButtonText className="text-lg font-bold">Sign Up</ButtonText>
-            </Button>
-          </Link>
         </VStack>
       </ScrollView>
     </SafeAreaView>

@@ -1,22 +1,21 @@
 import React from "react";
-import { Text } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Text, View } from "react-native";
 
-import { useSession } from "../../providers/ctx";
+import { useAuthStore } from "@/store/authStore";
 
 const Profile = () => {
-  const { signOut } = useSession();
+  const { logout } = useAuthStore();
   return (
-    <SafeAreaView>
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <Text
+        style={{ fontSize: 24 }}
         onPress={() => {
-          // The `app/(app)/_layout.tsx` redirects to the sign-in screen.
-          signOut();
+          logout();
         }}
       >
         Sign Out
       </Text>
-    </SafeAreaView>
+    </View>
   );
 };
 

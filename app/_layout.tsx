@@ -4,7 +4,7 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { SplashScreen, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
@@ -12,13 +12,28 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import "@/global.css";
-import { SessionProvider, useSession } from "../providers/ctx";
-import { SplashScreenController } from "../providers/splash";
+import { useAuthStore } from "@/store/authStore";
+import { useEffect } from "react";
+
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const colorScheme = useColorScheme();
+  const { isLoggedIn, _hasHydrated, isOtpScreen } = useAuthStore();
+
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
+
+  useEffect(() => {
+    if (_hasHydrated) {
+      SplashScreen.hideAsync();
+    }
+  }, [_hasHydrated]);
+
+  if (!_hasHydrated) {
+    return null;
+  }
 
   if (!loaded) {
     // Async font loading only occurs in development.
@@ -26,29 +41,20 @@ export default function RootLayout() {
   }
 
   return (
-    <SessionProvider>
-      <SplashScreenController />
-      <RootNavigator />
-    </SessionProvider>
-  );
-}
-
-// Create a new component that can access the SessionProvider context later.
-function RootNavigator() {
-  const colorScheme = useColorScheme();
-  const { session } = useSession();
-
-  return (
     <GluestackUIProvider mode="light">
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
         <Stack>
-          <Stack.Protected guard={!!session}>
+          <Stack.Protected guard={isLoggedIn}>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="+not-found" />
           </Stack.Protected>
 
-          <Stack.Protected guard={!session}>
+          <Stack.Protected guard={!isLoggedIn}>
             <Stack.Screen name="login" options={{ headerShown: false }} />
+            <Stack.Screen name="register" options={{ headerShown: false }} />
+            <Stack.Protected guard={isOtpScreen}>
+              <Stack.Screen name="verify" options={{ headerShown: false }} />
+            </Stack.Protected>
           </Stack.Protected>
         </Stack>
         <StatusBar style="auto" />

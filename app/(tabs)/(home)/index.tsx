@@ -1,22 +1,20 @@
+import { FlashList } from "@shopify/flash-list";
 import { Image } from "expo-image";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { FlashList } from "@shopify/flash-list";
 
-import { HStack } from "@/components/ui/hstack";
-import { Pressable } from "@/components/ui/pressable";
 import Cart from "@/components/shop/Cart";
-import { Dimensions, ScrollView } from "react-native";
-import Ttitle from "@/components/shop/Ttitle";
-import { VStack } from "@/components/ui/vstack";
-import { categories, products } from "@/data/index";
-import { useCallback, useState } from "react";
 import Category from "@/components/shop/Category";
 import Product from "@/components/shop/Product";
-import { Button, ButtonText, ButtonIcon } from "@/components/ui/button";
-import { MoveUpRight } from "lucide-react-native";
+import Ttitle from "@/components/shop/Ttitle";
 import { Box } from "@/components/ui/box";
-
-
+import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
+import { HStack } from "@/components/ui/hstack";
+import { Pressable } from "@/components/ui/pressable";
+import { VStack } from "@/components/ui/vstack";
+import { categories, products } from "@/data/index";
+import { MoveUpRight } from "lucide-react-native";
+import { useState } from "react";
+import { Dimensions, ScrollView } from "react-native";
 
 const blurhash =
   "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
@@ -26,9 +24,9 @@ export default function HomeScreen() {
   const width = Dimensions.get("screen").width;
   const numColumns = width < 600 ? 2 : width < 768 ? 3 : 4;
 
-  const handleSelect = useCallback((id: number) => {
+  const handleSelect = (id: number) => {
     setSelect(id);
-  }, []);
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-white">
