@@ -3,6 +3,7 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -16,6 +17,10 @@ import { useAuthStore } from "@/store/authStore";
 import { useEffect } from "react";
 
 SplashScreen.preventAutoHideAsync();
+
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: 5 } },
+});
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -41,24 +46,28 @@ export default function RootLayout() {
   }
 
   return (
-    <GluestackUIProvider mode="light">
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Protected guard={isLoggedIn}>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-          </Stack.Protected>
-
-          <Stack.Protected guard={!isLoggedIn}>
-            <Stack.Screen name="login" options={{ headerShown: false }} />
-            <Stack.Screen name="register" options={{ headerShown: false }} />
-            <Stack.Protected guard={isOtpScreen}>
-              <Stack.Screen name="verify" options={{ headerShown: false }} />
+    <QueryClientProvider client={queryClient}>
+      <GluestackUIProvider mode="light">
+        <ThemeProvider
+          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+        >
+          <Stack>
+            <Stack.Protected guard={isLoggedIn}>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="+not-found" />
             </Stack.Protected>
-          </Stack.Protected>
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
-    </GluestackUIProvider>
+
+            <Stack.Protected guard={!isLoggedIn}>
+              <Stack.Screen name="login" options={{ headerShown: false }} />
+              <Stack.Screen name="register" options={{ headerShown: false }} />
+              <Stack.Protected guard={isOtpScreen}>
+                <Stack.Screen name="verify" options={{ headerShown: false }} />
+              </Stack.Protected>
+            </Stack.Protected>
+          </Stack>
+          <StatusBar style="auto" />
+        </ThemeProvider>
+      </GluestackUIProvider>
+    </QueryClientProvider>
   );
 }

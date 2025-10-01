@@ -1,9 +1,9 @@
 import { Image } from "expo-image";
 
-import { Pressable } from "@/components/ui/pressable";
 import { Card } from "@/components/ui/card";
-import { CategoryType } from "@/types";
+import { Pressable } from "@/components/ui/pressable";
 import { Text } from "@/components/ui/text";
+import { CategoryType } from "@/types";
 
 interface CategoryProps extends CategoryType {
   select: number;
@@ -12,6 +12,8 @@ interface CategoryProps extends CategoryType {
 
 const blurhash =
   "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
+
+const IMG_URL = process.env.EXPO_PUBLIC_IMG_URL;
 
 const Category = ({ id, name, image, select, onSelect }: CategoryProps) => {
   return (
@@ -22,7 +24,7 @@ const Category = ({ id, name, image, select, onSelect }: CategoryProps) => {
             { width: 56, height: 56, borderRadius: 28 },
             select === id && { borderColor: "orange", borderWidth: 2 },
           ]}
-          source={image}
+          source={IMG_URL + image}
           placeholder={{ blurhash }}
           contentFit="cover"
           transition={1000}
